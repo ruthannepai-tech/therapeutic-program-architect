@@ -1,0 +1,132 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProgramDossier",
+  "description": "Single state object threaded through all 10 stages of the drug-program pipeline. Read on stage entry, updated on stage exit. The source of truth for the program.",
+  "type": "object",
+  "required": ["schema_version", "disease", "created_at", "stages", "gates", "decisions", "open_questions"],
+  "properties": {
+    "schema_version": {"type": "string", "const": "1.0"},
+    "disease": {"type": "string", "description": "Indication name as scoped by the user."},
+    "scope": {
+      "type": "object",
+      "description": "Population/subtype/geography scope locked at Stage 1.",
+      "properties": {
+        "population": {"type": "string"},
+        "subtype": {"type": "string"},
+        "geography": {"type": "string"}
+      }
+    },
+    "created_at": {"type": "string", "format": "date-time"},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "disease_archetype": {
+      "type": ["string", "null"],
+      "description": "Genetic-architecture archetype, set at Stage 1b / ARCHETYPE LOCK. Reshapes Stages 3/4/5/8/9.",
+      "enum": [null, "monogenic", "oligogenic", "polygenic_complex", "chromosomal", "mitochondrial", "somatic", "unknown"]
+    },
+    "mechanism_of_pathogenesis": {
+      "type": ["string", "null"],
+      "description": "For monogenic disease: the mechanism that drives modality choice (Stage 5). A clinical claim requiring human validation, not autonomous assertion.",
+      "enum": [null, "loss_of_function_haploinsufficient", "loss_of_function_recessive", "gain_of_function", "dominant_negative", "splice", "repeat_expansion", "nonsense", "toxic_rna", "unknown"]
+    },
+    "causal_gene": {
+      "type": ["string", "null"],
+      "description": "For monogenic disease: the known causal gene (often IS the target, collapsing Stage-4 discovery to confirmation)."
+    },
+    "data_density": {
+      "type": ["string", "null"],
+      "description": "Data availability tier from data_triage(); drives the Stage-3/4 branch.",
+      "enum": [null, "rich", "moderate", "sparse"]
+    },
+    "modality": {
+      "type": ["string", "null"],
+      "description": "Chosen therapeutic modality, set at Stage 5. Common-disease families + genetic-disease families.",
+      "enum": [null, "antibody", "ligand_trap_binder", "small_molecule", "aso_rna", "cell_therapy", "vaccine", "enzyme", "gene_therapy", "peptide", "other", "gene_replacement", "enzyme_replacement", "aso_knockdown", "sirna_knockdown", "splice_switching_aso", "base_prime_editing", "crispr_nuclease", "readthrough"]
+    },
+    "lead_targets": {
+      "type": "array",
+      "description": "Committed lead target(s) after Stage 5 gate.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "symbol": {"type": "string"},
+          "rationale": {"type": "string"},
+          "evidence_score": {"type": "number"}
+        }
+      }
+    },
+    "patient_priorities": {
+      "type": "array",
+      "description": "Ranked patient priorities from Stage 2; become design requirements.",
+      "items": {"type": "object", "properties": {"priority": {"type": "string"}, "rank": {"type": "integer"}}}
+    },
+    "stages": {
+      "type": "object",
+      "description": "Per-stage status. Keys are stage ids '1'..'10'.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["name", "status"],
+        "properties": {
+          "name": {"type": "string"},
+          "status": {"type": "string", "enum": ["not_started", "in_progress", "complete", "skipped", "blocked"]},
+          "confidence": {"type": "string", "enum": ["high", "medium", "low", "na"]},
+          "skill_used": {"type": "string"},
+          "artifacts": {
+            "type": "array",
+            "items": {"type": "object", "properties": {"filename": {"type": "string"}, "artifact_id": {"type": "string"}, "version_id": {"type": "string"}}}
+          },
+          "summary": {"type": "string"},
+          "started_at": {"type": "string"},
+          "completed_at": {"type": "string"}
+        }
+      }
+    },
+    "gates": {
+      "type": "object",
+      "description": "Named human-checkpoint gates. Keys are gate names from checkpoint_map.csv.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["type", "status"],
+        "properties": {
+          "type": {"type": "string", "enum": ["hard", "soft"]},
+          "status": {"type": "string", "enum": ["pending", "passed", "failed", "skipped"]},
+          "question": {"type": "string"},
+          "resolution": {"type": "string", "description": "What the user decided."},
+          "resolved_at": {"type": "string"}
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "description": "Audit log of every consequential decision + who made it.",
+      "items": {
+        "type": "object",
+        "required": ["stage", "decision", "decided_by"],
+        "properties": {
+          "stage": {"type": "string"},
+          "decision": {"type": "string"},
+          "rationale": {"type": "string"},
+          "decided_by": {"type": "string", "enum": ["user", "orchestrator"]},
+          "timestamp": {"type": "string"}
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "description": "Unresolved uncertainties / claims needing human or clinical validation.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "stage": {"type": "string"},
+          "question": {"type": "string"},
+          "needs": {"type": "string", "enum": ["user_input", "clinical_validation", "more_data", "expert_review"]},
+          "status": {"type": "string", "enum": ["open", "resolved"]}
+        }
+      }
+    },
+    "deliverables": {
+      "type": "array",
+      "description": "Final outward-facing artifacts assembled at Stage 10.",
+      "items": {"type": "object", "properties": {"filename": {"type": "string"}, "kind": {"type": "string"}, "artifact_id": {"type": "string"}}}
+    }
+  }
+}
