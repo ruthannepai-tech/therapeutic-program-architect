@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+program_dossier.json
+.DS_Store
