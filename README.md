@@ -73,7 +73,9 @@ Once published it appears in the live catalog; load it in any session with
 
 Run `deploy_agent.py`'s logic from a Claude Science repl cell (it uses the `host.agents` SDK,
 documented in the `customize` skill). It reads `agent/agent_manifest.json` and creates the
-profile with full catalog access, then attaches the connectors listed in the manifest.
+profile with full catalog access (`unrestricted`), which already grants every connector your
+workspace has — so it does not attach connectors one by one. It then reports any manifest
+connector your workspace is missing so you can authorize it in the Connectors panel.
 
 ```python
 # in a Claude Science repl cell — see deploy_agent.py for the full version
