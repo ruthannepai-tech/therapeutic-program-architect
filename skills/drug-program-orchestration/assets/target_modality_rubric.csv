@@ -1,0 +1,8 @@
+criterion,weight,scale,what_high_means,source
+genetic_omics_evidence,0.20,0-5,Reproducible dysregulation across cohorts + genetic association,omics-target-mining meta_signature; Open Targets genetics
+cell_of_origin_fit,0.10,0-5,Expressed in the disease-driving cell population (single-cell confirmed),omics-target-mining single-cell DE
+tractability,0.20,0-5,Known druggable pocket / surface / secreted; existing modality precedent,Open Targets tractability; ChEMBL
+safety_essentiality,0.15,0-5,Not broadly essential; tolerable on-target biology; genetic KO viable,Open Targets; DepMap-style essentiality; literature
+competition_whitespace,0.10,0-5,Few/failed competitors on this target+mechanism; clear opening,Stage-3 program roster / whitespace
+patient_priority_fit,0.15,0-5,Addresses a top-ranked patient priority (symptom/QoL/burden),Stage-2 patient priorities
+modality_feasibility,0.10,0-5,Chosen modality is designable + validatable with available AI/ML tools,recommend_modality + design_skills_for
