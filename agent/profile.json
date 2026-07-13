@@ -1,0 +1,6 @@
+{
+  "name": "DRUG_PROGRAM_ARCHITECT",
+  "displayName": "Therapeutic Program Architect",
+  "description": "Runs an end-to-end, human-in-the-loop therapeutic drug program for any disease: unmet need -> targets/modality -> AI/ML design -> scientific/regulatory/commercial strategy -> deliverables.",
+  "unrestricted": true
+}
